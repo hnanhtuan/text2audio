@@ -60,8 +60,15 @@ export async function POST(req) {
     }
 
     // 5. Initialize Google Cloud TTS Client
-    // We parse the private key string to handle standard newline escapes in env variables
-    const formattedPrivateKey = privateKey.replace(/\\n/g, '\n');
+    // We parse the private key string to handle standard newline escapes and surrounding quotes in env variables
+    let formattedPrivateKey = privateKey.trim();
+    if (formattedPrivateKey.startsWith('"') && formattedPrivateKey.endsWith('"')) {
+      formattedPrivateKey = formattedPrivateKey.slice(1, -1);
+    }
+    if (formattedPrivateKey.startsWith("'") && formattedPrivateKey.endsWith("'")) {
+      formattedPrivateKey = formattedPrivateKey.slice(1, -1);
+    }
+    formattedPrivateKey = formattedPrivateKey.replace(/\\n/g, '\n');
 
     const client = new textToSpeech.TextToSpeechClient({
       credentials: {
